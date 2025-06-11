@@ -11,8 +11,8 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX3_H_
-#define EX3_H_
+#ifndef EX4_H_
+#define EX4_H_
 
 #include "biodynamo.h"
 #include "my_growth_division.h"
@@ -56,4 +56,4 @@ inline int ex4(int argc, const char* argv[]) {
 
 }  // namespace bdm
 
-#endif  // EX3_H_
+#endif  // EX4_H_

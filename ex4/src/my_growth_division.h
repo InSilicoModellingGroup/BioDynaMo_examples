@@ -22,42 +22,46 @@ class MyGrowthDivision : public Behavior {
   BDM_BEHAVIOR_HEADER(MyGrowthDivision, Behavior, 1);
 
   public:
-  MyGrowthDivision() { AlwaysCopyToNew(); }
-  MyGrowthDivision(real_t threshold, real_t growth_rate, real_t propability)
-    : threshold_(threshold), growth_rate_(growth_rate), propability_(propability) {}
+    MyGrowthDivision() { AlwaysCopyToNew(); }
+    MyGrowthDivision(real_t threshold, real_t growth_rate, real_t propability)
+      : threshold_(threshold), growth_rate_(growth_rate), propability_(propability) {}
 
-  virtual ~MyGrowthDivision() = default;
+    virtual ~MyGrowthDivision() = default;
 
-  void Initialize(const NewAgentEvent& event) override {
-    // https://biodynamo.github.io/api/structbdm_1_1NewAgentEvent.html
-    Base::Initialize(event);
+    void Initialize(const NewAgentEvent& event) override {
+      // https://biodynamo.github.io/api/structbdm_1_1NewAgentEvent.html
+      Base::Initialize(event);
 
-    // if cell divides then behavior attributes have to be initialized
-    if (auto* b = dynamic_cast<MyGrowthDivision*>(event.existing_behavior)) {
-      threshold_ = b->threshold_;
-      growth_rate_ = b->growth_rate_;
-      propability_ = b->propability_;
-    } else {
-      Log::Fatal("MyGrowthDivision::Initialize",
-                 "event.existing_behavior was not of type MyGrowthDivision");
-    }
-  }
-
-  void Run(Agent* agent) override {
-    auto* rand = Simulation::GetActive()->GetRandom();
-
-    if (auto* cell = dynamic_cast<Cell*>(agent)) {
-      if (cell->GetDiameter() <= threshold_) {
-        cell->ChangeVolume(growth_rate_);
-      } else if (rand->Uniform() <= propability_) {
-        auto* new_cell = cell->Divide();
-        // check what happens if the following line is commented:
-        new_cell->AddBehavior(new MyGrowthDivision(threshold_, growth_rate_, propability_));
+      // if cell divides then behavior attributes have to be initialized
+      if (auto* b = dynamic_cast<MyGrowthDivision*>(event.existing_behavior)) {
+        threshold_ = b->GetThreshold();
+        growth_rate_ = b->GetGrowthRate();
+        propability_ = b->GetPropability();
+      } else {
+        Log::Fatal("MyGrowthDivision::Initialize",
+                   "event.existing_behavior was not of type MyGrowthDivision");
       }
-    } else {
-      Log::Fatal("MyGrowthDivision::Run", "Agent is not a Cell");
     }
-  }
+
+    void Run(Agent* agent) override {
+      auto* rand = Simulation::GetActive()->GetRandom();
+
+      if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        if (cell->GetDiameter() <= this->GetThreshold()) {
+          cell->ChangeVolume(this->GetGrowthRate());
+        } else if (rand->Uniform() <= this->GetPropability()) {
+          auto* new_cell = cell->Divide();
+          // check what happens if the following line is commented:
+          new_cell->AddBehavior(new MyGrowthDivision(threshold_, growth_rate_, propability_));
+        }
+      } else {
+        Log::Fatal("MyGrowthDivision::Run", "Agent is not a Cell");
+      }
+    }
+
+    real_t GetThreshold() const { return threshold_; }
+    real_t GetGrowthRate() const { return growth_rate_; }
+    real_t GetPropability() const { return propability_; }
 
   private:
     real_t threshold_ = 10.0;
