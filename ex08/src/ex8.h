@@ -27,8 +27,8 @@ inline int ex8(int argc, const char* argv[]) {
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kClosed;
-    param->min_bound = -50.0;
-    param->max_bound = +50.0;
+    param->min_bound =   0.0;
+    param->max_bound = 100.0;
     param->export_visualization = true;
     param->visualization_interval = 10;
     param->visualize_agents["Cell"] = { "diameter_", "volume_" };
@@ -39,8 +39,9 @@ inline int ex8(int argc, const char* argv[]) {
     param->simulation_time_step = 1.0;
   };
 
+  // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
-
+  // https://biodynamo.github.io/api/structbdm_1_1Param.html
   const Param* param = sim.GetParam();
 
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
@@ -71,8 +72,10 @@ inline int ex8(int argc, const char* argv[]) {
     cell->AddBehavior(new Secretion("TGF", production_rate));
     return cell;
   };
-  const Real3 center{0.0,0.0,0.0};
-  const real_t radius(0.5*(param->max_bound-param->min_bound));
+  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  const real_t mean_xyz((param->max_bound+param->min_bound)/2);
+  const Real3 center{mean_xyz, mean_xyz, mean_xyz};
+  const real_t radius(0.45*(param->max_bound-param->min_bound));
   ModelInitializer::CreateAgentsInSphereRndm(center,radius,2222, generate_cluster_of_cells);
 
   sim.GetScheduler()->Simulate(5001);

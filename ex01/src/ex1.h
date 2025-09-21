@@ -23,8 +23,8 @@ inline int ex1(int argc, const char* argv[]) {
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kOpen;
-    param->min_bound = -100.0;
-    param->max_bound = +100.0;
+    param->min_bound =   0.0;
+    param->max_bound = 100.0;
     param->export_visualization = true;
     param->visualization_interval = 1;
     param->visualize_agents["Cell"] = { "diameter_" };
@@ -39,9 +39,9 @@ inline int ex1(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/classbdm_1_1Random.html
   auto* rand = sim.GetRandom();
 
-  const Real3 xyz{rand->Uniform(-10.,+10.),
-                  rand->Uniform(-10.,+10.),
-                  rand->Uniform(-10.,+10.)};
+  const Real3 xyz{rand->Uniform(45.,55.),
+                  rand->Uniform(45.,55.),
+                  rand->Uniform(45.,55.)};
 
   // https://biodynamo.github.io/api/classbdm_1_1Cell.html
   Cell* cell = new Cell({0.0, 0.0, 0.0});

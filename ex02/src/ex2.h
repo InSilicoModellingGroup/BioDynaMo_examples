@@ -23,8 +23,8 @@ inline int ex2(int argc, const char* argv[]) {
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kClosed;
-    param->min_bound = -100.0;
-    param->max_bound = +100.0;
+    param->min_bound =   0.0;
+    param->max_bound = 100.0;
     param->export_visualization = true;
     param->visualization_interval = 1;
     param->visualize_agents["Cell"] = { "diameter_", "density_", "volume_" };
@@ -32,7 +32,10 @@ inline int ex2(int argc, const char* argv[]) {
     param->simulation_time_step = 1.0;
   };
 
+  // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
+  // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  const Param* param = sim.GetParam();
 
   auto generate_grid_of_cells = [&](const Real3& xyz) {
     Cell* cell = new Cell();
@@ -41,10 +44,10 @@ inline int ex2(int argc, const char* argv[]) {
     cell->SetPosition(xyz);
     return cell;
   };
-  size_t cells_per_axis = 5;
-  real_t delta = 10.0;
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
-  ModelInitializer::Grid3D(cells_per_axis, delta, generate_grid_of_cells);
+  const size_t agents_per_dim = 5;
+  const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
+  ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
 
   sim.GetScheduler()->Simulate(10);
 
