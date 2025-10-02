@@ -50,16 +50,20 @@ class MyGrowthDivision : public Behavior {
       if (auto* cell = dynamic_cast<MyCell*>(agent)) {
         AgentPointer<MyCell> other_cell = nullptr;
 
-        // define how you'd like to do the cell search
+        // custom function that will be used later as for how to
+        // define the search among cells in the simulation
         auto search_functor_ = L2F([&](Agent* agent_,
                                        real_t squared_distance_)
         {
           if (auto* neighbor_cell = dynamic_cast<const MyCell*>(agent_)) {
+            // only if cells do not share their phenotype ID
             if (cell->GetPhenotype() != neighbor_cell->GetPhenotype()) {
+              // calculate the Euclidean distance between the cells
               real_t d2 = SquaredDistance(cell->GetPosition(),
                                           neighbor_cell->GetPosition());
-              // check if cells are close enough
+              // check if cells are very close enough
               if (d2 < pow2(this->GetSmallestDistance())) {
+                // ...then, this is the neighboring cell
                 other_cell =
                     AgentPointer<MyCell>(neighbor_cell->GetUid());
               }
@@ -70,7 +74,10 @@ class MyGrowthDivision : public Behavior {
         if (safe_distance_>0.0) {
           // execute the search process
           ctxt->ForEachNeighbor(search_functor_, *cell, pow2(safe_distance_));
+          // if indeed this cell is adjacent to another cell (of different phenotype)
+          // then the former simply stops from growing and dividing
           if (other_cell != nullptr) {
+            // check what happens if the following line is commented:
             cell->RemoveBehavior(this);
             return;
           }

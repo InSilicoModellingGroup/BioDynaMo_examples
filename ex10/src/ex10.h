@@ -40,6 +40,12 @@ inline int ex10(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   const Param* param = sim.GetParam();
 
+  /*
+  Used-defined function used below to generate cells. Note that these
+  cells will be labelled as phenotype-1. This type of cells can only
+  migrate; note below that the propability parameter is fixed to zero
+  so it is impossible for these cells to move.
+  */
   auto generate_grid_of_cells = [&](const Real3& xyz) {
     real_t migration_rate = 1.0;
     real_t migration_propability = 0.0;
@@ -55,8 +61,21 @@ inline int ex10(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
   const size_t agents_per_dim = 7;
   const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
+  /*
+  Generate and add in the simulation engine a uniform cloud of 7x7x7
+  cells of phenotype-1.
+  */
   ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
 
+  /*
+  Used-defined function used below to generate cells. Note that these
+  cells will be labelled as phenotype-2. This type of cells can grow and
+  divide; note below that the propability parameter is fixed to one
+  so it always for these cells to grow.
+  Also by inspection of the customized behavior of growth & division, we
+  note that when a cell is adjacent to another cell (of different phenotype)
+  then the former former simply stops from growing and dividing anymore.
+  */
   auto generate_cluster_of_cells = [&](const Real3& xyz) {
     real_t volume_growth_rate = 0.025;
     real_t division_propability = 1.0;
@@ -77,6 +96,10 @@ inline int ex10(int argc, const char* argv[]) {
   const real_t mean_xyz((param->max_bound+param->min_bound)/2);
   const Real3 center{mean_xyz, mean_xyz, mean_xyz};
   const real_t radius(0.1*(param->max_bound-param->min_bound));
+  /*
+  Generate and add in the simulation engine some randomly scattered (within a
+  sphere) some 5 cells of phenotype-2.
+  */
   ModelInitializer::CreateAgentsInSphereRndm(center,radius,5, generate_cluster_of_cells);
 
   sim.GetScheduler()->Simulate(3001);

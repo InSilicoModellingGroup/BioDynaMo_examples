@@ -15,6 +15,9 @@
 #define EX5_H_
 
 #include "biodynamo.h"
+/*
+two user-defined header files are included here
+*/
 #include "my_growth_division.h"
 #include "my_migration.h"
 
@@ -52,8 +55,17 @@ inline int ex5(int argc, const char* argv[]) {
   cell->SetDiameter(2.0);
   cell->SetDensity(1.0);
   // check the 'my_growth_division.h' header file
+  /*
+  This user-defined growth and division behavior is at in example "ex4".
+  */
   cell->AddBehavior(new MyGrowthDivision(max_diameter, volume_growth_rate, propability));
   // check the 'my_migration.h' header file
+  /*
+  Ad the title of the user-defined behavior indicates, it concerns the
+  random movement of cells in 3D space by probing first (in every
+  successive time step of course) if the probability to move is below a
+  threshold.
+  */
   cell->AddBehavior(new MyMigration(migration_rate, propability));
   rm->AddAgent(cell);
 

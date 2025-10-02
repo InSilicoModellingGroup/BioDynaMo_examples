@@ -20,6 +20,10 @@ namespace bdm {
 
 inline int ex2(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  /*
+  Same as with the "ex1", yet here we request for BioDynaMo to export
+  more data in the Paraview files.
+  */
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kClosed;
@@ -35,8 +39,16 @@ inline int ex2(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  /*
+  Access the global parameters (some are initialized as indicated above)
+  of the BioDynaMo simulation engine.
+  */
   const Param* param = sim.GetParam();
 
+  /*
+  Used-defined function that is used below to generate agents (i.e., cells)
+  provided some space vector, a fixed diameter and "mass density" value.
+  */
   auto generate_grid_of_cells = [&](const Real3& xyz) {
     Cell* cell = new Cell();
     cell->SetDiameter(2.0);
@@ -45,8 +57,20 @@ inline int ex2(int argc, const char* argv[]) {
     return cell;
   };
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  /*
+  Say we wish to create a grid of 5 agents in the X, Y, Z axis
+  respectively
+  */
   const size_t agents_per_dim = 5;
+  /*
+  We calculate below the corresponding even spacing among the agents
+  */
   const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
+  /*
+  Execute an existing function that can create a grid of evenly spaced
+  agents in three dimensions, where the user-defined function for customized
+  cell creation is utilized.
+  */
   ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
 
   sim.GetScheduler()->Simulate(10);

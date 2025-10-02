@@ -20,6 +20,13 @@ namespace bdm {
 
 inline int ex1(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  /*
+  User-defined function that can be used to define the global
+  parameters of a BioDynaMo simulation, such as the size of the
+  simulation domain, a flag confirming that visualization data are
+  exported and the frequency by which these data are saved in a
+  Paraview file, the time increment, etc.
+  */
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kOpen;
@@ -33,23 +40,58 @@ inline int ex1(int argc, const char* argv[]) {
   };
 
   // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
+  /*
+  Vital creation of the BioDynaMo simulation engine object that
+  handles everything about the platform. The construction below
+  also takes care initializing the global parameters of the
+  BioDynaMo simulation engine using the user-defined function
+  above.
+  */
   Simulation sim(argc, argv, set_parameters);
   // https://biodynamo.github.io/api/classbdm_1_1ResourceManager.html
+  /*
+  Access the data manager, or as it's termed in BioDynaMo, the resource
+  manager of the simulation engine.
+  */
   auto* rm = sim.GetResourceManager();
   // https://biodynamo.github.io/api/classbdm_1_1Random.html
+  /*
+  Access the random number generator facility.
+  */
   auto* rand = sim.GetRandom();
 
+  /*
+  Simply create a 3-component array, i.e., a 3D vector of real-valued
+  data that has been initialized by providing random numbers between
+  45 to 55. This can be thought as a space vector with random numbers
+  in the [45, 55] range.
+  */
   const Real3 xyz{rand->Uniform(45.,55.),
                   rand->Uniform(45.,55.),
                   rand->Uniform(45.,55.)};
 
   // https://biodynamo.github.io/api/classbdm_1_1Cell.html
+  /*
+  Create an agent, here a BioDynaMo cell that is positioned in 3D
+  space, initially at (0,0,0), the give some value to its diameter
+  and "mass density" and update its position based using the above
+  space vector with random numbers.
+  */
   Cell* cell = new Cell({0.0, 0.0, 0.0});
   cell->SetDiameter(2.0);
   cell->SetDensity(1.0);
   cell->SetPosition(xyz);
+  /*
+  An important step to update the resource manager by adding the
+  above agent (i.e., the cell) into the simulation engine.
+  */
   rm->AddAgent(cell);
 
+  /*
+  Ask the BioDynaMo simulation engine to progress for 10 steps,
+  where each step separated by the other by an an increment of 1
+  (see parameter 'param->simulation_time_step' above).
+  */
   sim.GetScheduler()->Simulate(10);
 
   std::cout << "Simulation completed successfully!" << std::endl;

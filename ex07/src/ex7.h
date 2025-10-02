@@ -15,6 +15,9 @@
 #define EX7_H_
 
 #include "biodynamo.h"
+/*
+two user-defined header files are included here
+*/
 #include "my_growth.h"
 #include "my_migration.h"
 
@@ -49,6 +52,12 @@ inline int ex7(int argc, const char* argv[]) {
     cell->SetDensity(1.0);
     cell->SetPosition(xyz);
     // check the 'my_migration.h' header file
+    /*
+    Following from example "ex6", this migration behavior defers in such
+    that if cell reaches the domain boundary it sticks there, it stops
+    moving anymore and then it starts growing until it reaches a max
+    dimater value.
+    */
     cell->AddBehavior(new MyMigration(migration_rate, propability, stick2boundary));
     return cell;
   };

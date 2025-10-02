@@ -15,6 +15,9 @@
 #define EX4_H_
 
 #include "biodynamo.h"
+/*
+a user-defined header file is included here
+*/
 #include "my_growth_division.h"
 
 namespace bdm {
@@ -40,6 +43,10 @@ inline int ex4(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   const Param* param = sim.GetParam();
 
+  /*
+  As with example "ex3", below we have some model parameters that will
+  control the cell behavior.
+  */
   real_t max_diameter = 3.0;
   real_t volume_growth_rate = 0.12;
   real_t propability = 0.9;
@@ -50,6 +57,13 @@ inline int ex4(int argc, const char* argv[]) {
   cell->SetDiameter(2.0);
   cell->SetDensity(1.0);
   // check the 'my_growth_division.h' header file
+  /*
+  Opposed to example "ex3", the user-defined growth & division behavior
+  grows a cell until diameter reaches a max, and then it probes (in every
+  successive time step) whether the probability to divide is below a
+  threshold. If that's true then it splits into two cells both of which
+  inherit this behavior; if not then nothing happens.
+  */
   cell->AddBehavior(new MyGrowthDivision(max_diameter, volume_growth_rate, propability));
   rm->AddAgent(cell);
 

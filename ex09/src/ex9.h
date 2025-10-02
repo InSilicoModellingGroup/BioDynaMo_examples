@@ -15,6 +15,9 @@
 #define EX9_H_
 
 #include "biodynamo.h"
+/*
+Include a new header describing a new class of an agent (cell).
+*/
 #include "my_cell.h"
 #include "my_growth.h"
 #include "my_migration.h"
@@ -25,6 +28,10 @@ enum Substances { kCytokine };
 
 inline int ex9(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  /*
+  Please note the important differences on the visualization parameter
+  'param->visualize_agents["MyCell"]' compared to the previous example.
+  */
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kClosed;
@@ -54,12 +61,20 @@ inline int ex9(int argc, const char* argv[]) {
   ModelInitializer::AddBoundaryConditions(kCytokine, bc_type,
                                           std::make_unique<ConstantBoundaryCondition>(0));
 
+  /*
+  Model parameters to control cells' behavior.
+  */
   real_t uptake_rate = -0.2e-3;
   real_t migration_rate = 1.0;
   real_t propability = 0.5;
   real_t production_rate = 0.2e-3;
   bool stick2boundary = true;
 
+  /*
+  Used-defined function used below to generate cells. Note that these
+  cells will be labelled (following the properties of the new cell type)
+  as phenotype-1. This type of cells can only uptake "TGF".
+  */
   auto generate_grid_of_cells = [&](const Real3& xyz) {
     MyCell* cell = new MyCell();
     cell->SetDiameter(4.0);
@@ -72,8 +87,16 @@ inline int ex9(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
   const real_t min_location(0.9*param->min_bound);
   const real_t max_location(0.9*param->max_bound);
+  /*
+  Generate and add in the simulation engine 777 cells of phenotype-1.
+  */
   ModelInitializer::CreateAgentsRandom(min_location,max_location,777, generate_grid_of_cells);
 
+  /*
+  Used-defined function used below to generate cells. Note that these
+  cells will be labelled (following the properties of the new cell type)
+  as phenotype-2. This type of cells can secrete "TGF" and migrate.
+  */
   auto generate_cluster_of_cells = [&](const Real3& xyz) {
     MyCell* cell = new MyCell();
     cell->SetDiameter(2.0);
@@ -88,6 +111,9 @@ inline int ex9(int argc, const char* argv[]) {
   const real_t mean_xyz((param->max_bound+param->min_bound)/2);
   const Real3 center{mean_xyz, mean_xyz, mean_xyz};
   const real_t radius(0.5*(param->max_bound-param->min_bound));
+  /*
+  Generate and add in the simulation engine 2222 cells of phenotype-2.
+  */
   ModelInitializer::CreateAgentsInSphereRndm(center,radius,2222, generate_cluster_of_cells);
 
   sim.GetScheduler()->Simulate(5001);
