@@ -11,6 +11,6 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#include "ex10.h"
+#include "ex11.h"
 
-int main(int argc, const char* argv[]) { return bdm::ex10(argc, argv); }
+int main(int argc, const char* argv[]) { return bdm::ex11(argc, argv); }

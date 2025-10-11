@@ -12,7 +12,7 @@
 #
 # -----------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.19.3)
-project(ex10)
+project(ex11)
 
 # BioDynaMo curretly uses the C++17 standard.
 set(CMAKE_CXX_STANDARD 17)

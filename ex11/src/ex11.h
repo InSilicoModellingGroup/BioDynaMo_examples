@@ -11,8 +11,8 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX10_H_
-#define EX10_H_
+#ifndef EX11_H_
+#define EX11_H_
 
 #include "my_utils.h"
 #include "my_cell.h"
@@ -21,7 +21,7 @@
 
 namespace bdm {
 
-inline int ex10(int argc, const char* argv[]) {
+inline int ex11(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
@@ -41,7 +41,7 @@ inline int ex10(int argc, const char* argv[]) {
   const Param* param = sim.GetParam();
 
   /*
-  Used-defined function used below to generate cells. Note that these
+  User-defined function used below to generate cells. Note that these
   cells will be labelled as phenotype-1. This type of cells can only
   migrate; note below that the propability parameter is fixed to zero
   so it is impossible for these cells to move.
@@ -68,7 +68,7 @@ inline int ex10(int argc, const char* argv[]) {
   ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
 
   /*
-  Used-defined function used below to generate cells. Note that these
+  User-defined function used below to generate cells. Note that these
   cells will be labelled as phenotype-2. This type of cells can grow and
   divide; note below that the propability parameter is fixed to one
   so it always for these cells to grow.
@@ -110,4 +110,4 @@ inline int ex10(int argc, const char* argv[]) {
 
 }  // namespace bdm
 
-#endif  // EX10_H_
+#endif  // EX11_H_

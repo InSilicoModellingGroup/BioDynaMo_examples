@@ -1,4 +1,4 @@
-# ex10
+# ex11
 
 This repository contains a simple BioDynaMo simulation example.
 
@@ -40,5 +40,5 @@ biodynamo run
 
 Option 2:
 ```
-./build/ex10
+./build/ex11
 ```
