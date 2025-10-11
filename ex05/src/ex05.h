@@ -11,19 +11,19 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX7_H_
-#define EX7_H_
+#ifndef EX05_H_
+#define EX05_H_
 
 #include "biodynamo.h"
 /*
 two user-defined header files are included here
 */
-#include "my_growth.h"
+#include "my_growth_division.h"
 #include "my_migration.h"
 
 namespace bdm {
 
-inline int ex7(int argc, const char* argv[]) {
+inline int ex05(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
@@ -39,40 +39,42 @@ inline int ex7(int argc, const char* argv[]) {
 
   // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
+  // https://biodynamo.github.io/api/classbdm_1_1ResourceManager.html
+  auto* rm = sim.GetResourceManager();
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   const Param* param = sim.GetParam();
 
-  real_t migration_rate = 1.0;
+  real_t max_diameter = 3.0;
+  real_t volume_growth_rate = 0.05;
   real_t propability = 0.5;
-  bool stick2boundary = true;
+  real_t migration_rate = 1.0;
 
-  auto generate_cluster_of_cells = [&](const Real3& xyz) {
-    Cell* cell = new Cell();
-    cell->SetDiameter(2.0);
-    cell->SetDensity(1.0);
-    cell->SetPosition(xyz);
-    // check the 'my_migration.h' header file
-    /*
-    Following from example "ex6", this migration behavior defers in such
-    that if cell reaches the domain boundary it sticks there, it stops
-    moving anymore and then it starts growing until it reaches a max
-    dimater value.
-    */
-    cell->AddBehavior(new MyMigration(migration_rate, propability, stick2boundary));
-    return cell;
-  };
-  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  // https://biodynamo.github.io/api/classbdm_1_1Cell.html
   const real_t mean_xyz((param->max_bound+param->min_bound)/2);
-  const Real3 center{mean_xyz, mean_xyz, mean_xyz};
-  const real_t radius(0.45*(param->max_bound-param->min_bound));
-  ModelInitializer::CreateAgentsInSphereRndm(center,radius,2222, generate_cluster_of_cells);
+  Cell* cell = new Cell({mean_xyz, mean_xyz, mean_xyz});
+  cell->SetDiameter(2.0);
+  cell->SetDensity(1.0);
+  /*
+  a user-defined behavior about the growth and division of a cell that
+  follows that of example "ex4";
+  however, check the 'my_growth_division.h' header file for more info
+  */
+  cell->AddBehavior(new MyGrowthDivision(max_diameter, volume_growth_rate, propability));
+  /*
+  a user-defined behavior that concerns the random movement of
+  cells in 3D space by probing first (in every successive time-step
+  of course) if the probability to move is below a threshold;
+  however, do check the 'my_migration.h' header file for more info
+  */
+  cell->AddBehavior(new MyMigration(migration_rate, propability));
+  rm->AddAgent(cell);
 
-  sim.GetScheduler()->Simulate(5001);
+  sim.GetScheduler()->Simulate(1001);
 
   std::cout << "Simulation completed successfully!" << std::endl;
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX6_H_
+#endif // EX05_H_

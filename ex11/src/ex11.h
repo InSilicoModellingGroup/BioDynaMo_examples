@@ -41,12 +41,13 @@ inline int ex11(int argc, const char* argv[]) {
   const Param* param = sim.GetParam();
 
   /*
-  User-defined function used below to generate cells. Note that these
+  User-defined function utlized below to generate cells. Note that these
   cells will be labelled as phenotype-1. This type of cells can only
   migrate; note below that the propability parameter is fixed to zero
   so it is impossible for these cells to move.
   */
   auto generate_grid_of_cells = [&](const Real3& xyz) {
+    // cell behavior model parameters
     real_t migration_rate = 1.0;
     real_t migration_propability = 0.0;
 
@@ -58,17 +59,18 @@ inline int ex11(int argc, const char* argv[]) {
     cell->AddBehavior(new MyMigration(migration_rate, migration_propability));
     return cell;
   };
-  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
-  const size_t agents_per_dim = 7;
-  const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
   /*
   Generate and add in the simulation engine a uniform cloud of 7x7x7
   cells of phenotype-1.
   */
-  ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
+  const size_t agents_per_dim = 7;
+  const real_t spacing = (param->max_bound-param->min_bound)/(agents_per_dim-1);
+  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  ModelInitializer::Grid3D(agents_per_dim,spacing,
+                           generate_grid_of_cells);
 
   /*
-  User-defined function used below to generate cells. Note that these
+  User-defined function utlized below to generate cells. Note that these
   cells will be labelled as phenotype-2. This type of cells can grow and
   divide; note below that the propability parameter is fixed to one
   so it always for these cells to grow.
@@ -77,6 +79,7 @@ inline int ex11(int argc, const char* argv[]) {
   then the former former simply stops from growing and dividing anymore.
   */
   auto generate_cluster_of_cells = [&](const Real3& xyz) {
+    // cell behavior model parameters
     real_t volume_growth_rate = 0.025;
     real_t division_propability = 1.0;
     // scaled mean diameter between the two cell types
@@ -92,15 +95,16 @@ inline int ex11(int argc, const char* argv[]) {
     cell->AddBehavior(new MyGrowthDivision(3.0, volume_growth_rate, division_propability, smallest_distance, safe_distance));
     return cell;
   };
-  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
-  const real_t mean_xyz((param->max_bound+param->min_bound)/2);
-  const Real3 center{mean_xyz, mean_xyz, mean_xyz};
-  const real_t radius(0.1*(param->max_bound-param->min_bound));
   /*
   Generate and add in the simulation engine some randomly scattered (within a
   sphere) some 5 cells of phenotype-2.
   */
-  ModelInitializer::CreateAgentsInSphereRndm(center,radius,5, generate_cluster_of_cells);
+  const real_t mean_xyz((param->max_bound+param->min_bound)/2);
+  const Real3 center{mean_xyz, mean_xyz, mean_xyz};
+  const real_t radius(0.1*(param->max_bound-param->min_bound));
+  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  ModelInitializer::CreateAgentsInSphereRndm(center,radius,
+                                             5, generate_cluster_of_cells);
 
   sim.GetScheduler()->Simulate(3001);
 
@@ -108,6 +112,6 @@ inline int ex11(int argc, const char* argv[]) {
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX11_H_
+#endif // EX11_H_

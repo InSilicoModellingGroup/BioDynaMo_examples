@@ -44,7 +44,10 @@ class MyGrowth : public Behavior {
 
     void Run(Agent* agent) override {
       if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        // check if cell diameter is below a fixed threshold value
         if (cell->GetDiameter() <= this->GetThreshold()) {
+          // now increase the cell volume provided the (constant)
+          // speed by which its size increases
           cell->ChangeVolume(this->GetGrowthRate());
         }
       } else {
@@ -60,6 +63,6 @@ class MyGrowth : public Behavior {
     real_t growth_rate_ = 1.0;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_GROWTH_H_
+#endif // MY_GROWTH_H_

@@ -11,27 +11,28 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX2_H_
-#define EX2_H_
+#ifndef EX07_H_
+#define EX07_H_
 
 #include "biodynamo.h"
+/*
+two user-defined header files are included here
+*/
+#include "my_growth.h"
+#include "my_migration.h"
 
 namespace bdm {
 
-inline int ex2(int argc, const char* argv[]) {
+inline int ex07(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
-  /*
-  Same as with the "ex1", yet here we request for BioDynaMo to export
-  more data in the Paraview files.
-  */
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kClosed;
     param->min_bound =   0.0;
     param->max_bound = 100.0;
     param->export_visualization = true;
-    param->visualization_interval = 1;
-    param->visualize_agents["Cell"] = { "diameter_", "density_", "volume_" };
+    param->visualization_interval = 10;
+    param->visualize_agents["Cell"] = { "diameter_", "volume_" };
     param->statistics = false;
     param->simulation_time_step = 1.0;
   };
@@ -39,46 +40,39 @@ inline int ex2(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
-  /*
-  Access the global parameters (some are initialized as indicated above)
-  of the BioDynaMo simulation engine.
-  */
   const Param* param = sim.GetParam();
 
-  /*
-  Used-defined function that is used below to generate agents (i.e., cells)
-  provided some space vector, a fixed diameter and "mass density" value.
-  */
-  auto generate_grid_of_cells = [&](const Real3& xyz) {
+  auto generate_cluster_of_cells = [&](const Real3& xyz) {
+    // cell behavior model parameters
+    real_t migration_rate = 1.0;
+    real_t propability = 0.5;
+    bool stick2boundary = true;
+
     Cell* cell = new Cell();
     cell->SetDiameter(2.0);
     cell->SetDensity(1.0);
     cell->SetPosition(xyz);
+    /*
+    Following from example "ex6", this migration behavior differs in
+    such that if a cell reaches the domain boundary it sticks there, it
+    stops moving anymore and then it starts growing until it reaches
+    a maximum cell diameter value
+    */
+    cell->AddBehavior(new MyMigration(migration_rate, propability, stick2boundary));
     return cell;
   };
   // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
-  /*
-  Say we wish to create a grid of 5 agents in the X, Y, Z axis
-  respectively
-  */
-  const size_t agents_per_dim = 5;
-  /*
-  We calculate below the corresponding even spacing among the agents
-  */
-  const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
-  /*
-  Execute an existing function that can create a grid of evenly spaced
-  agents in three dimensions, where the user-defined function for customized
-  cell creation is utilized.
-  */
-  ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
+  const real_t mean_xyz((param->max_bound+param->min_bound)/2);
+  const Real3 center{mean_xyz, mean_xyz, mean_xyz};
+  const real_t radius(0.45*(param->max_bound-param->min_bound));
+  ModelInitializer::CreateAgentsInSphereRndm(center,radius,2222, generate_cluster_of_cells);
 
-  sim.GetScheduler()->Simulate(10);
+  sim.GetScheduler()->Simulate(5001);
 
   std::cout << "Simulation completed successfully!" << std::endl;
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX2_H_
+#endif // EX07_H_

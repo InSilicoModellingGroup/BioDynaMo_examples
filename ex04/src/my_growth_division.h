@@ -47,10 +47,19 @@ class MyGrowthDivision : public Behavior {
       auto* rand = Simulation::GetActive()->GetRandom();
 
       if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        // check if cell diameter is below a fixed threshold value
         if (cell->GetDiameter() <= this->GetThreshold()) {
+          // now increase the cell volume provided the (constant)
+          // speed by which its size increases
           cell->ChangeVolume(this->GetGrowthRate());
+        // otherwise check if a uniform random number is below the
+        // propability for the cell to split in two halves (divide)
         } else if (rand->Uniform() <= this->GetPropability()) {
+          // now activate the division of this cell and get access
+          // to the newly generated cell
           auto* new_cell = cell->Divide();
+          // and set for that new cell to have the same behavior as
+          // with the cell it originated from; however, you can
           // check what happens if the following line is commented:
           new_cell->AddBehavior(new MyGrowthDivision(threshold_, growth_rate_, propability_));
         }
@@ -69,6 +78,6 @@ class MyGrowthDivision : public Behavior {
     real_t propability_ = 1.000;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_GROWTH_DIVISION_H_
+#endif // MY_GROWTH_DIVISION_H_

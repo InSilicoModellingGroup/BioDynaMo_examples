@@ -48,7 +48,12 @@ class MyMigration : public Behavior {
       auto* param = Simulation::GetActive()->GetParam();
 
       if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        // check if a uniform random number is below the propability
+        // parameter set to indicate the cell can migrate
         if (rand->Uniform() <= this->GetPropability()) {
+          // calculate the cell (random) displacement after
+          // multiplying the velocity with the simulation
+          // time increment (time-step)
           real_t delta = this->GetMigrationRate() * param->simulation_time_step;
           Real3 displacement = rand->UniformArray<3>(-delta, +delta);
           // https://biodynamo.github.io/api/classbdm_1_1Cell.html
@@ -83,7 +88,12 @@ class MyMigration : public Behavior {
           // https://biodynamo.github.io/api/classbdm_1_1Cell.html
           if (cell_on_bound) {
             cell->SetPosition(xyz);
+            // check if the flag 'stick_to_boundary_' indicates for the
+            // cell to remain on the boundary of the simulation domain
+            // forever or not
             if (this->GetStickToBoundary()) {
+              // in this case then simply freeze the cell on the boundary
+              // and never let it do anything else
               cell->RemoveBehavior(this);
 
               // NOTE: not a good strategy to provide model parameter values
@@ -91,7 +101,8 @@ class MyMigration : public Behavior {
               //       a great challenge
               real_t max_diameter = 4.0;
               real_t volume_growth_rate = 0.1;
-              // check the 'my_growth.h' header file
+              // check the 'my_growth.h' header file as well for more
+              // info about this cell behavior
               cell->AddBehavior(new MyGrowth(max_diameter, volume_growth_rate));
             }
           }
@@ -111,6 +122,6 @@ class MyMigration : public Behavior {
     bool stick_to_boundary_ = false;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_MIGRATION_H_
+#endif // MY_MIGRATION_H_

@@ -1,0 +1,84 @@
+// -----------------------------------------------------------------------------
+//
+// Copyright (C) 2021 CERN & University of Surrey for the benefit of the
+// BioDynaMo collaboration. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//
+// See the LICENSE file distributed with this work for details.
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.
+//
+// -----------------------------------------------------------------------------
+#ifndef EX02_H_
+#define EX02_H_
+
+#include "biodynamo.h"
+
+namespace bdm {
+
+inline int ex02(int argc, const char* argv[]) {
+  /*
+  Same as with the "ex1", yet here we request for BioDynaMo to export
+  more data in the Paraview files.
+  */
+  // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  auto set_parameters = [](Param* param) {
+    param->use_progress_bar = true;
+    param->bound_space = Param::BoundSpaceMode::kClosed;
+    param->min_bound =   0.0;
+    param->max_bound = 100.0;
+    param->export_visualization = true;
+    param->visualization_interval = 1;
+    param->visualize_agents["Cell"] = { "diameter_", "density_", "volume_" };
+    param->statistics = false;
+    param->simulation_time_step = 1.0;
+  };
+
+  // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
+  Simulation sim(argc, argv, set_parameters);
+  /*
+  Access the global parameters (some are initialized as indicated above)
+  of the BioDynaMo simulation engine.
+  */
+  // https://biodynamo.github.io/api/structbdm_1_1Param.html
+  const Param* param = sim.GetParam();
+
+  /*
+  Used-defined function that is used below to generate agents (i.e., cells)
+  provided some space vector, a fixed diameter and "mass density" value.
+  */
+  auto generate_grid_of_cells = [&](const Real3& xyz) {
+    Cell* cell = new Cell();
+    cell->SetDiameter(2.0);
+    cell->SetDensity(1.0);
+    cell->SetPosition(xyz);
+    return cell;
+  };
+  /*
+  Say we wish to create a grid of 5 agents in the X, Y, Z axis
+  respectively
+  */
+  const size_t agents_per_dim = 5;
+  /*
+  We calculate below the corresponding even spacing among the agents
+  */
+  const real_t space = (param->max_bound-param->min_bound)/(agents_per_dim-1);
+  /*
+  Execute an existing function that can create a grid of evenly spaced
+  agents in three dimensions, where the user-defined function for customized
+  cell creation is utilized.
+  */
+  // https://biodynamo.github.io/api/structbdm_1_1ModelInitializer.html
+  ModelInitializer::Grid3D(agents_per_dim,space, generate_grid_of_cells);
+
+  sim.GetScheduler()->Simulate(10);
+
+  std::cout << "Simulation completed successfully!" << std::endl;
+  return 0;
+}
+
+} // namespace bdm
+
+#endif // EX02_H_

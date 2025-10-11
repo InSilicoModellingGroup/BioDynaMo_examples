@@ -11,8 +11,8 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX4_H_
-#define EX4_H_
+#ifndef EX04_H_
+#define EX04_H_
 
 #include "biodynamo.h"
 /*
@@ -22,7 +22,7 @@ a user-defined header file is included here
 
 namespace bdm {
 
-inline int ex4(int argc, const char* argv[]) {
+inline int ex04(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
@@ -73,6 +73,6 @@ inline int ex4(int argc, const char* argv[]) {
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX4_H_
+#endif // EX04_H_

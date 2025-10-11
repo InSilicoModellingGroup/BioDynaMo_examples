@@ -129,6 +129,6 @@ inline int ex10(int argc, const char* argv[]) {
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
 #endif // EX10_H_

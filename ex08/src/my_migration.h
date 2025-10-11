@@ -49,16 +49,24 @@ class MyMigration : public Behavior {
       auto* param = Simulation::GetActive()->GetParam();
 
       if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        // check if a uniform random number is below the propability
+        // parameter set to indicate the cell can migrate
         if (rand->Uniform() <= this->GetPropability()) {
+          // calculate the cell (random) displacement after
+          // multiplying the velocity with the simulation
+          // time increment (time-step)
           real_t delta = this->GetMigrationRate() * param->simulation_time_step;
           Real3 displacement = rand->UniformArray<3>(-delta, +delta);
-          // https://biodynamo.github.io/api/classbdm_1_1Cell.html
+          // update the spatial location of the cell
           cell->UpdatePosition(displacement);
 
           Real3 xyz = cell->GetPosition();
           const real_t min_b = param->min_bound + 0.55 * cell->GetDiameter();
           const real_t max_b = param->max_bound - 0.55 * cell->GetDiameter();
           bool cell_on_bound = false;
+          // perform the following checks to verify if the cell is
+          // positioned approximately close to the simulation domain
+          // boundaries (within some "margins" as indicated right above)
           if (xyz[0] < min_b) {
             xyz[0] = min_b;
             cell_on_bound = true;
@@ -83,8 +91,14 @@ class MyMigration : public Behavior {
 
           // https://biodynamo.github.io/api/classbdm_1_1Cell.html
           if (cell_on_bound) {
+            // update the spatial position of the cell
             cell->SetPosition(xyz);
+            // check if the flag 'stick_to_boundary_' indicates for the
+            // cell to remain on the boundary of the simulation domain
+            // forever or not
             if (this->GetStickToBoundary()) {
+              // in this case then simply freeze the cell on the boundary
+              // and never let it do anything else
               cell->RemoveBehavior(this);
 
               // NOTE: not a good strategy to provide model parameter values
@@ -112,6 +126,6 @@ class MyMigration : public Behavior {
     bool stick_to_boundary_ = false;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_MIGRATION_H_
+#endif // MY_MIGRATION_H_

@@ -47,9 +47,15 @@ class MyMigration : public Behavior {
       auto* param = Simulation::GetActive()->GetParam();
 
       if (auto* cell = dynamic_cast<Cell*>(agent)) {
+        // check if a uniform random number is below the propability
+        // parameter set to indicate the cell can migrate
         if (rand->Uniform() <= this->GetPropability()) {
+          // calculate the cell (random) displacement after
+          // multiplying the velocity with the simulation
+          // time increment (time-step)
           real_t delta = this->GetMigrationRate() * param->simulation_time_step;
           Real3 displacement = rand->UniformArray<3>(-delta, +delta);
+          // update the spatial location of the cell via
           // https://biodynamo.github.io/api/classbdm_1_1Cell.html
           cell->UpdatePosition(displacement);
         }
@@ -66,6 +72,6 @@ class MyMigration : public Behavior {
     real_t propability_ = 1.000;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_MIGRATION_H_
+#endif // MY_MIGRATION_H_

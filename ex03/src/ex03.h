@@ -11,14 +11,14 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX3_H_
-#define EX3_H_
+#ifndef EX03_H_
+#define EX03_H_
 
 #include "biodynamo.h"
 
 namespace bdm {
 
-inline int ex3(int argc, const char* argv[]) {
+inline int ex03(int argc, const char* argv[]) {
   // https://biodynamo.github.io/api/structbdm_1_1Param.html
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
@@ -58,7 +58,6 @@ inline int ex3(int argc, const char* argv[]) {
   Cell* cell = new Cell({mean_xyz, mean_xyz, mean_xyz});
   cell->SetDiameter(2.0);
   cell->SetDensity(1.0);
-  // https://biodynamo.github.io/api/classbdm_1_1GrowthDivision.html
   /*
   Not only the user can provide value-related data (like diameter,
   volume, etc.) but also they can plug in the cell "behavior" data.
@@ -69,6 +68,7 @@ inline int ex3(int argc, const char* argv[]) {
   Notably only the original cell (mother cell) can continue to grow and
   divide, yet the new cell (daughter cell) simply lives on.
   */
+  // https://biodynamo.github.io/api/classbdm_1_1GrowthDivision.html
   cell->AddBehavior(new GrowthDivision(max_diameter, volume_growth_rate));
   /*
   And now update the resource manager by adding the cell.
@@ -84,6 +84,6 @@ inline int ex3(int argc, const char* argv[]) {
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX3_H_
+#endif // EX03_H_

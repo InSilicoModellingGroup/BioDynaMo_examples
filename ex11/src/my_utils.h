@@ -32,6 +32,6 @@ inline real_t SquaredDistance(const Real3& u, const Real3& v) {
   return (pow2(dx) + pow2(dy) + pow2(dz));
 }
 
-}  // namespace bdm
+} // namespace bdm
 
 #endif // MY_UTILS_H_

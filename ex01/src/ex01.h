@@ -11,15 +11,14 @@
 // regarding copyright ownership.
 //
 // -----------------------------------------------------------------------------
-#ifndef EX1_H_
-#define EX1_H_
+#ifndef EX01_H_
+#define EX01_H_
 
 #include "biodynamo.h"
 
 namespace bdm {
 
-inline int ex1(int argc, const char* argv[]) {
-  // https://biodynamo.github.io/api/structbdm_1_1Param.html
+inline int ex01(int argc, const char* argv[]) {
   /*
   User-defined function that can be used to define the global
   parameters of a BioDynaMo simulation, such as the size of the
@@ -27,6 +26,7 @@ inline int ex1(int argc, const char* argv[]) {
   exported and the frequency by which these data are saved in a
   Paraview file, the time increment, etc.
   */
+  // https://biodynamo.github.io/api/structbdm_1_1Param.html
   auto set_parameters = [](Param* param) {
     param->use_progress_bar = true;
     param->bound_space = Param::BoundSpaceMode::kOpen;
@@ -39,7 +39,6 @@ inline int ex1(int argc, const char* argv[]) {
     param->simulation_time_step = 1.0;
   };
 
-  // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   /*
   Vital creation of the BioDynaMo simulation engine object that
   handles everything about the platform. The construction below
@@ -47,17 +46,18 @@ inline int ex1(int argc, const char* argv[]) {
   BioDynaMo simulation engine using the user-defined function
   above.
   */
+  // https://biodynamo.github.io/api/classbdm_1_1Simulation.html
   Simulation sim(argc, argv, set_parameters);
-  // https://biodynamo.github.io/api/classbdm_1_1ResourceManager.html
   /*
   Access the data manager, or as it's termed in BioDynaMo, the resource
   manager of the simulation engine.
   */
+  // https://biodynamo.github.io/api/classbdm_1_1ResourceManager.html
   auto* rm = sim.GetResourceManager();
-  // https://biodynamo.github.io/api/classbdm_1_1Random.html
   /*
   Access the random number generator facility.
   */
+  // https://biodynamo.github.io/api/classbdm_1_1Random.html
   auto* rand = sim.GetRandom();
 
   /*
@@ -70,13 +70,13 @@ inline int ex1(int argc, const char* argv[]) {
                   rand->Uniform(45.,55.),
                   rand->Uniform(45.,55.)};
 
-  // https://biodynamo.github.io/api/classbdm_1_1Cell.html
   /*
   Create an agent, here a BioDynaMo cell that is positioned in 3D
   space, initially at (0,0,0), the give some value to its diameter
   and "mass density" and update its position based using the above
   space vector with random numbers.
   */
+  // https://biodynamo.github.io/api/classbdm_1_1Cell.html
   Cell* cell = new Cell({0.0, 0.0, 0.0});
   cell->SetDiameter(2.0);
   cell->SetDensity(1.0);
@@ -98,6 +98,6 @@ inline int ex1(int argc, const char* argv[]) {
   return 0;
 }
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // EX1_H_
+#endif // EX01_H_

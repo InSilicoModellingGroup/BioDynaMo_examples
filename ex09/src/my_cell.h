@@ -43,6 +43,6 @@ class MyCell : public Cell {
     int phenotype_ = 1;
 };
 
-}  // namespace bdm
+} // namespace bdm
 
-#endif  // MY_CELL_H_
+#endif // MY_CELL_H_
